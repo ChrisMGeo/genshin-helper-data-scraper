@@ -1,5 +1,3 @@
 node_modules/
 credentials.json
-data.json
-index.js
-consts.js
+build/
