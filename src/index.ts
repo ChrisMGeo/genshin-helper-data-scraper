@@ -4,33 +4,74 @@ import { CharacterId, translatedCharacterInfo } from "./consts/character-info";
 import { translatedWeaponInfo, WeaponId } from "./consts/weapon-info";
 import { ArtifactId, translatedArtifactInfo, ArtifactGroupId, artifactGroups } from "./consts/artifact-info";
 
-function levenstein(a: string, b: string) {
-  var m = [], i, j, min = Math.min;
+function levenstein(s1: string, s2: string, opts: { insWeight?: number, delWeight?: number, subWeight?: number, useDamerau?: boolean } = {}) {
+  const insWeight = opts.insWeight ?? 1;
+  const delWeight = opts.delWeight ?? 1;
+  const subWeight = opts.subWeight ?? 1;
+  const useDamerau = opts.useDamerau ?? false;
+  let d: number[][] = [];
 
-  if (!(a && b)) return (b || a).length;
+  if (s1.length === 0) {
+    // if s1 string is empty, just insert the s2 string
+    return s2.length * insWeight;
+  }
 
-  for (i = 0; i <= b.length; m[i] = [i++]);
-  for (j = 0; j <= a.length; m[0][j] = j++);
+  if (s2.length === 0) {
+    // if s2 string is empty, just delete the s1 string
+    return s1.length * delWeight;
+  }
 
-  for (i = 1; i <= b.length; i++) {
-    for (j = 1; j <= a.length; j++) {
-      m[i][j] = b.charAt(i - 1) == a.charAt(j - 1)
-        ? m[i - 1][j - 1]
-        : m[i][j] = min(
-          m[i - 1][j - 1] + 1,
-          min(m[i][j - 1] + 1, m[i - 1][j] + 1))
+  // Init the matrix
+  for (let i = 0; i <= s1.length; i += 1) {
+    d[i] = [];
+    d[i][0] = i * delWeight;
+  }
+
+  for (let j = 0; j <= s2.length; j += 1) {
+    d[0][j] = j * insWeight;
+  }
+
+  for (let i = 1; i <= s1.length; i += 1) {
+    for (let j = 1; j <= s2.length; j += 1) {
+      let subCostIncrement = subWeight;
+      if (s1.charAt(i - 1) === s2.charAt(j - 1)) {
+        subCostIncrement = 0;
+      }
+
+      const delCost = d[i - 1][j] + delWeight;
+      const insCost = d[i][j - 1] + insWeight;
+      const subCost = d[i - 1][j - 1] + subCostIncrement;
+
+      let min = delCost;
+      if (insCost < min) min = insCost;
+      if (subCost < min) min = subCost;
+
+
+      if (useDamerau) {
+        if (i > 1 && j > 1
+          && s1.charAt(i - 1) === s2.charAt(j - 2)
+          && s1.charAt(i - 2) === s2.charAt(j - 1)) {
+          const transCost = d[i - 2][j - 2] + subCostIncrement;
+
+          if (transCost < min) min = transCost;
+        }
+      }
+
+
+      d[i][j] = min;
     }
   }
 
-  return m[b.length][a.length];
-}
-function fuzzyContains(a: string, b: string, error: number) {
+  return d[s1.length][s2.length];
+};
+
+function fuzzyContains(a: string, b: string, error: number): [boolean, number] {
   var matchLength = a.length - b.length;
-  var distanceToMatch = levenstein(a, b) - matchLength;
+  var distanceToMatch = levenstein(a, b, { insWeight: 0, useDamerau: true }) - matchLength;
   if (distanceToMatch - error > 0) {
-    return false;
+    return [false, distanceToMatch];
   } else {
-    return true;
+    return [true, distanceToMatch];
   }
 }
 
@@ -54,7 +95,7 @@ type CharacterBuild = {
     ArtifactId | { type: "group", id: ArtifactGroupId }
     | {
       type: "choose",
-      amount: 1 | 2; // choose 1 or 2 from options
+      amount: 1 | 2; // choose 1 (4pc) or 2 (2pc) from options
       options: (ArtifactId | { type: "group", id: ArtifactGroupId })[]
     }
     | {
@@ -145,7 +186,7 @@ async function getData() {
         : "";
     if (!characterValues.values) continue;
     for (
-      let build = 4;
+      let build = 4; // start at 4 to skip the first 4 rows which don't contain build info
       build < characterValues.values.length - 1;
       build++
     ) {
@@ -190,7 +231,17 @@ async function getData() {
         //   }
         // })
         weapons: weapons.split("\n").map((line: string) => {
-          return nameSortedWeapons.find(weapon => fuzzyContains(line, weapon.name, 3))?.nameId;
+          let matches: [WeaponId, number][] = [];
+          nameSortedWeapons.forEach(weapon => {
+            const [contains, distanceToMatch] = fuzzyContains(line, weapon.name, 3);
+            if (contains) {
+              matches.push([weapon.nameId, distanceToMatch]);
+            }
+          });
+          matches.sort((a, b) => b[0].length - a[0].length); // longer results
+          return matches?.[0]?.[0];
+          // return nameSortedWeapons.find(weapon => fuzzyContains(line, weapon.name, 4))
+          //   ?.nameId;
         }).filter((a: string | undefined) => a) as WeaponId[],
         artifactSets: artifactSets.split("\n").map((line: string) => allArtifactInfo.find(artifact => line.includes(artifact.name))?.nameId).filter((a: string | undefined) => a) as ArtifactId[],
         // artifactSets: artifactSets.split("\n").map((line: string) => {
