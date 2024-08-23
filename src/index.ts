@@ -117,14 +117,6 @@ async function getData() {
     spreadsheetId,
     ranges: characterRanges,
   });
-  const mergeReq = (await googleSheets.spreadsheets.get({
-    spreadsheetId,
-    ranges: characterRanges,
-    fields: "sheets(merges)"
-  }));
-  const sheetMerges = mergeReq.data.sheets?.map(sheet => sheet.merges);
-  fs.writeFileSync("merges.json", JSON.stringify(sheetMerges, null, 2));
-
 
   console.log(characterRanges.length);
   const characterValueRanges = characterData.data.valueRanges;
@@ -253,7 +245,7 @@ async function getData() {
     };
     jsonData.push(character);
   }
-  fs.writeFile("data.json", JSON.stringify(jsonData, null, 2), (error) => {
+  fs.writeFile("out/data.json", JSON.stringify(jsonData, null, 2), (error) => {
     if (error) throw error;
   });
 }
