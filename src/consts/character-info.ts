@@ -5555,6 +5555,216 @@ const characterInfo = [
         "descHash": 3687897243
       }
     ]
+  },
+  {
+    "id": 10000100,
+    "weaponType": "polearm",
+    "titleHash": 1166581626,
+    "detailHash": 2925574410,
+    "constellationHash": 3428238274,
+    "rarity": 4,
+    "vision": "geo",
+    "nameId": "kachina",
+    "nameHash": 2531816890,
+    "descHash": 3308604265,
+    "constellations": [
+      {
+        "nameHash": 2143241681,
+        "descHash": 3551476087
+      },
+      {
+        "nameHash": 704182361,
+        "descHash": 3636727879
+      },
+      {
+        "nameHash": 2998878913,
+        "descHash": 2722944119
+      },
+      {
+        "nameHash": 817423409,
+        "descHash": 1912939455
+      },
+      {
+        "nameHash": 2586210761,
+        "descHash": 2563579007
+      },
+      {
+        "nameHash": 610256545,
+        "descHash": 300194863
+      }
+    ],
+    "energySkill": {
+      "nameHash": 2707726997,
+      "descHash": 3915826848
+    },
+    "skills": [
+      {
+        "nameHash": 4116744293,
+        "descHash": 1347356192
+      },
+      {
+        "nameHash": 534022181,
+        "descHash": 790944136
+      }
+    ],
+    "passives": [
+      {
+        "nameHash": 1167570173,
+        "descHash": 504694723
+      },
+      {
+        "nameHash": 1959286333,
+        "descHash": 1579280195
+      },
+      {
+        "nameHash": 16013805,
+        "descHash": 311460699
+      },
+      {
+        "nameHash": 718581789,
+        "descHash": 774491579
+      }
+    ]
+  },
+  {
+    "id": 10000101,
+    "weaponType": "claymore",
+    "titleHash": 3971938690,
+    "detailHash": 3369230146,
+    "constellationHash": 988403722,
+    "rarity": 5,
+    "vision": "dendro",
+    "nameId": "kinich",
+    "nameHash": 4172712634,
+    "descHash": 279112361,
+    "constellations": [
+      {
+        "nameHash": 1583880905,
+        "descHash": 2148535143
+      },
+      {
+        "nameHash": 2132485057,
+        "descHash": 193919799
+      },
+      {
+        "nameHash": 4288565513,
+        "descHash": 813677743
+      },
+      {
+        "nameHash": 815285033,
+        "descHash": 1290482255
+      },
+      {
+        "nameHash": 1182554297,
+        "descHash": 1617442455
+      },
+      {
+        "nameHash": 981774713,
+        "descHash": 3619914391
+      }
+    ],
+    "energySkill": {
+      "nameHash": 1181453621,
+      "descHash": 2445789712
+    },
+    "skills": [
+      {
+        "nameHash": 535629773,
+        "descHash": 1264932640
+      },
+      {
+        "nameHash": 2146107581,
+        "descHash": 2166306472
+      }
+    ],
+    "passives": [
+      {
+        "nameHash": 941099205,
+        "descHash": 1465446299
+      },
+      {
+        "nameHash": 3419772861,
+        "descHash": 792984923
+      },
+      {
+        "nameHash": 3527544989,
+        "descHash": 2149903347
+      },
+      {
+        "nameHash": 1603240741,
+        "descHash": 2707321883
+      }
+    ]
+  },
+  {
+    "id": 10000102,
+    "weaponType": "catalyst",
+    "titleHash": 2563734330,
+    "detailHash": 1660843154,
+    "constellationHash": 1420048706,
+    "rarity": 5,
+    "vision": "hydro",
+    "nameId": "mualani",
+    "nameHash": 3949670506,
+    "descHash": 1024678209,
+    "constellations": [
+      {
+        "nameHash": 985140641,
+        "descHash": 1925738703
+      },
+      {
+        "nameHash": 1018012993,
+        "descHash": 492393007
+      },
+      {
+        "nameHash": 2809940313,
+        "descHash": 3748105903
+      },
+      {
+        "nameHash": 84972441,
+        "descHash": 2006825415
+      },
+      {
+        "nameHash": 1734370449,
+        "descHash": 1899583375
+      },
+      {
+        "nameHash": 2582545881,
+        "descHash": 273178231
+      }
+    ],
+    "energySkill": {
+      "nameHash": 1842584189,
+      "descHash": 185606200
+    },
+    "skills": [
+      {
+        "nameHash": 3235714597,
+        "descHash": 614763864
+      },
+      {
+        "nameHash": 3723656973,
+        "descHash": 1499271704
+      }
+    ],
+    "passives": [
+      {
+        "nameHash": 2874263949,
+        "descHash": 2002316195
+      },
+      {
+        "nameHash": 3370387981,
+        "descHash": 3402341411
+      },
+      {
+        "nameHash": 2817448677,
+        "descHash": 1238715691
+      },
+      {
+        "nameHash": 2757123517,
+        "descHash": 1189657291
+      }
+    ]
   }
 ] as const;
 export type CharacterInfo = typeof characterInfo[number];
