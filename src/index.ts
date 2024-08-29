@@ -67,7 +67,7 @@ function levenstein(s1: string, s2: string, opts: { insWeight?: number, delWeigh
 
 function fuzzyContains(a: string, b: string, error: number): [boolean, number] {
   var matchLength = a.length - b.length;
-  var distanceToMatch = levenstein(a, b, { insWeight: 0, useDamerau: true }) - matchLength;
+  var distanceToMatch = levenstein(a, b, { useDamerau: true }) - matchLength;
   if (distanceToMatch - error > 0) {
     return [false, distanceToMatch];
   } else {
