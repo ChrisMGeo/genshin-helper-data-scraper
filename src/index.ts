@@ -238,7 +238,10 @@ async function getData() {
               matches.push([weapon.nameId, distanceToMatch]);
             }
           });
-          matches.sort((a, b) => b[0].length - a[0].length); // longer results
+          matches.sort((a, b) => {
+            if (a[1] === b[1]) return (allWeaponInfo.find(e => e.nameId === a[0])?.name.length ?? 0) - (allWeaponInfo.find(e => e.nameId === b[0])?.name.length ?? 0);
+            return a[1] < b[1] ? -1 : 1;
+          }).filter(e => allWeaponInfo.find(a => a.nameId === e[0])?.type === weapon) // longer results
           return matches?.[0]?.[0];
           // return nameSortedWeapons.find(weapon => fuzzyContains(line, weapon.name, 4))
           //   ?.nameId;
