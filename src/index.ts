@@ -224,20 +224,18 @@ async function getData() {
         //   }
         // })
         weapons: weapons.split("\n").map((line: string) => {
-          let matches: [WeaponId, number][] = [];
-          nameSortedWeapons.forEach(weapon => {
+          return (nameSortedWeapons.filter((a) => a.type === weapon).map(weapon => {
             const [contains, distanceToMatch] = fuzzyContains(line, weapon.name, 3);
             if (contains) {
-              matches.push([weapon.nameId, distanceToMatch]);
+              return [weapon.nameId, distanceToMatch];
             }
-          });
-          matches.sort((a, b) => {
-            if (a[1] === b[1]) return (allWeaponInfo.find(e => e.nameId === a[0])?.name.length ?? 0) - (allWeaponInfo.find(e => e.nameId === b[0])?.name.length ?? 0);
-            return a[1] < b[1] ? -1 : 1;
-          }).filter(e => allWeaponInfo.find(a => a.nameId === e[0])?.type === weapon) // longer results
-          return matches?.[0]?.[0];
-          // return nameSortedWeapons.find(weapon => fuzzyContains(line, weapon.name, 4))
-          //   ?.nameId;
+            return undefined;
+          }).filter(a => a) as [WeaponId, number][]).reduce((acc: [WeaponId, number] | undefined, curr: [WeaponId, number]) => {
+            if (!acc) return curr;
+            if (curr[1] < acc[1]) return curr;
+            if (curr[1] === acc[1] && (allWeaponInfo.find(e => e.nameId === curr[0])?.name?.length ?? 0) < (allWeaponInfo.find(e => e.nameId === acc[0])?.name?.length ?? 0)) return curr;
+            return acc;
+          }, undefined)?.[0];
         }).filter((a: string | undefined) => a) as WeaponId[],
         artifactSets: artifactSets.split("\n").map((line: string) => allArtifactInfo.find(artifact => line.includes(artifact.name))?.nameId).filter((a: string | undefined) => a) as ArtifactId[],
         // artifactSets: artifactSets.split("\n").map((line: string) => {
