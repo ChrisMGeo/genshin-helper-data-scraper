@@ -120,8 +120,7 @@ async function getData() {
     keyFile: "credentials.json",
     scopes: "https://www.googleapis.com/auth/spreadsheets.readonly",
   });
-  const client = await auth.getClient();
-  const googleSheets = google.sheets({ version: "v4", auth: client });
+  const googleSheets = google.sheets("v4");
   const spreadsheetId = "1gNxZ2xab1J6o1TuNVWMeLOZ7TPOqrsf3SshP5DLvKzI";
   let sheetNames = ["Pyro ", "Electro ", "Hydro ", "Cryo ", "Anemo ", "Geo ", "Dendro"];
   let jsonData: any[] = [];
