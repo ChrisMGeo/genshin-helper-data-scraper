@@ -191,21 +191,14 @@ async function getData() {
       build++
     ) {
       const buildValues = characterValues.values[build].slice(1);
-      const buildName: string = buildValues[0] ?? "";
-      const buildWeapons: string = buildValues[1] ?? (log(builds[builds.length - 1].weapons) ?? "");
-      const buildArtifacts: string = buildValues[2] ?? (log(builds[builds.length - 1].artifactSets) ?? "");
-      const buildArtifactMainStats: string = buildValues[3] ?? (log(builds[builds.length - 1].artifactMainStats) ?? "")
-      const buildArtifactSubstats: string = buildValues[4] ?? (log(builds[builds.length - 1].artifactSubStats) ?? "")
-      const buildTalentPriority: string = buildValues[5] ?? (log(builds[builds.length - 1].talentPriority) ?? "");
-      const buildAbilityTips: string = buildValues[6] ?? ""
       const buildObject = {
-        name: buildName,
-        weapons: buildWeapons,
-        artifactSets: buildArtifacts,
-        artifactMainStats: buildArtifactMainStats,
-        artifactSubStats: buildArtifactSubstats,
-        talentPriority: buildTalentPriority,
-        abilityTips: buildAbilityTips,
+        name: buildValues[0] ?? "",
+        weapons: buildValues[1] ?? (log(builds[builds.length - 1].weapons) ?? ""),
+        artifactSets: buildValues[2] ?? (log(builds[builds.length - 1].artifactSets) ?? ""),
+        artifactMainStats: buildValues[3] ?? (log(builds[builds.length - 1].artifactMainStats) ?? ""),
+        artifactSubStats: buildValues[4] ?? (log(builds[builds.length - 1].artifactSubStats) ?? ""),
+        talentPriority: buildValues[5] ?? (log(builds[builds.length - 1].talentPriority) ?? ""),
+        abilityTips: buildValues[6] ?? "",
       };
       // console.log(buildObject);
       builds.push(buildObject);
