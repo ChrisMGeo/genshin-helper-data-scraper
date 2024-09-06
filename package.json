@@ -1,6 +1,6 @@
 {
   "devDependencies": {
-    "@types/node": "^18.19.45",
+    "@types/node": "^18.19.50",
     "googleapis": "^105.0.0",
     "typescript": "^5.5.4"
   },
