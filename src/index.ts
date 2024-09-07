@@ -3,77 +3,7 @@ import fs from "fs";
 import { CharacterId, translatedCharacterInfo } from "./consts/character-info";
 import { translatedWeaponInfo, WeaponId } from "./consts/weapon-info";
 import { ArtifactId, translatedArtifactInfo, ArtifactGroupId, artifactGroups } from "./consts/artifact-info";
-
-function levenstein(s1: string, s2: string, opts: { insWeight?: number, delWeight?: number, subWeight?: number, useDamerau?: boolean } = {}) {
-  const insWeight = opts.insWeight ?? 1;
-  const delWeight = opts.delWeight ?? 1;
-  const subWeight = opts.subWeight ?? 1;
-  const useDamerau = opts.useDamerau ?? false;
-  let d: number[][] = [];
-
-  if (s1.length === 0) {
-    // if s1 string is empty, just insert the s2 string
-    return s2.length * insWeight;
-  }
-
-  if (s2.length === 0) {
-    // if s2 string is empty, just delete the s1 string
-    return s1.length * delWeight;
-  }
-
-  // Init the matrix
-  for (let i = 0; i <= s1.length; i += 1) {
-    d[i] = [];
-    d[i][0] = i * delWeight;
-  }
-
-  for (let j = 0; j <= s2.length; j += 1) {
-    d[0][j] = j * insWeight;
-  }
-
-  for (let i = 1; i <= s1.length; i += 1) {
-    for (let j = 1; j <= s2.length; j += 1) {
-      let subCostIncrement = subWeight;
-      if (s1.charAt(i - 1) === s2.charAt(j - 1)) {
-        subCostIncrement = 0;
-      }
-
-      const delCost = d[i - 1][j] + delWeight;
-      const insCost = d[i][j - 1] + insWeight;
-      const subCost = d[i - 1][j - 1] + subCostIncrement;
-
-      let min = delCost;
-      if (insCost < min) min = insCost;
-      if (subCost < min) min = subCost;
-
-
-      if (useDamerau) {
-        if (i > 1 && j > 1
-          && s1.charAt(i - 1) === s2.charAt(j - 2)
-          && s1.charAt(i - 2) === s2.charAt(j - 1)) {
-          const transCost = d[i - 2][j - 2] + subCostIncrement;
-
-          if (transCost < min) min = transCost;
-        }
-      }
-
-
-      d[i][j] = min;
-    }
-  }
-
-  return d[s1.length][s2.length];
-};
-
-function fuzzyContains(a: string, b: string, error: number): [boolean, number] {
-  var matchLength = a.length - b.length;
-  var distanceToMatch = levenstein(a, b, { useDamerau: true }) - matchLength;
-  if (distanceToMatch - error > 0) {
-    return [false, distanceToMatch];
-  } else {
-    return [true, distanceToMatch];
-  }
-}
+import Fuse from "fuse.js";
 
 const log = <T>(a: T) => {
   console.log("LOG:", a);
@@ -112,10 +42,17 @@ type CharacterBuild = {
 async function getData() {
   const allCharacterInfo = translatedCharacterInfo();
   const allWeaponInfo = translatedWeaponInfo();
-  const nameSortedWeapons = allWeaponInfo.sort((a, b) => b.name.length - a.name.length);
+  const fuseOptions = {
+    keys: ["name"],
+    includeScore: true,
+    threshold: 0.5,
+  };
+  const swordFuse = new Fuse(allWeaponInfo.filter(weapon => weapon.type === "sword"), fuseOptions);
+  const claymoreFuse = new Fuse(allWeaponInfo.filter(weapon => weapon.type === "claymore"), fuseOptions);
+  const polearmFuse = new Fuse(allWeaponInfo.filter(weapon => weapon.type === "polearm"), fuseOptions);
+  const bowFuse = new Fuse(allWeaponInfo.filter(weapon => weapon.type === "bow"), fuseOptions);
+  const catalystFuse = new Fuse(allWeaponInfo.filter(weapon => weapon.type === "catalyst"), fuseOptions);
   const allArtifactInfo = translatedArtifactInfo();
-  const nameSortedArtifacts = allArtifactInfo.sort((a, b) => b.name.length - a.name.length);
-  const nameSortedArtifactGroups = [...artifactGroups].sort((a, b) => b.name.length - a.name.length);
   const auth = new google.auth.GoogleAuth({
     keyFile: "credentials.json",
     scopes: "https://www.googleapis.com/auth/spreadsheets.readonly",
@@ -204,7 +141,21 @@ async function getData() {
     }
     // console.log(builds);
     // sort weapons in descending order based on name length
-    const modifiedBuilds: CharacterBuild[] = builds.map(({ weapons, artifactSets, ...rest }) => {
+    const modifiedBuilds: CharacterBuild[] = builds.map(({ weapons: _weapons, artifactSets, ...rest }) => {
+      const weapons = _weapons.split("\n").map((line: string) => {
+        switch (weapon) {
+          case "sword":
+            return swordFuse.search(line)?.[0]?.item?.nameId;
+          case "claymore":
+            return claymoreFuse.search(line)?.[0]?.item?.nameId;
+          case "polearm":
+            return polearmFuse.search(line)?.[0]?.item?.nameId;
+          case "catalyst":
+            return catalystFuse.search(line)?.[0]?.item?.nameId;
+          case "bow":
+            return bowFuse.search(line)?.[0]?.item?.nameId;
+        }
+      }).filter(a => a) as WeaponId[];
       return {
         ...rest,
         // weapons: weapons.split("\n").map((line: string) => {
@@ -222,20 +173,7 @@ async function getData() {
         //     }
         //   }
         // })
-        weapons: weapons.split("\n").map((line: string) => {
-          return (nameSortedWeapons.filter((a) => a.type === weapon).map(weapon => {
-            const [contains, distanceToMatch] = fuzzyContains(line, weapon.name, 3);
-            if (contains) {
-              return [weapon.nameId, distanceToMatch];
-            }
-            return undefined;
-          }).filter(a => a) as [WeaponId, number][]).reduce((acc: [WeaponId, number] | undefined, curr: [WeaponId, number]) => {
-            if (!acc) return curr;
-            if (curr[1] < acc[1]) return curr;
-            if (curr[1] === acc[1] && (allWeaponInfo.find(e => e.nameId === curr[0])?.name?.length ?? 0) < (allWeaponInfo.find(e => e.nameId === acc[0])?.name?.length ?? 0)) return curr;
-            return acc;
-          }, undefined)?.[0];
-        }).filter((a: string | undefined) => a) as WeaponId[],
+        weapons,
         artifactSets: artifactSets.split("\n").map((line: string) => allArtifactInfo.find(artifact => line.includes(artifact.name))?.nameId).filter((a: string | undefined) => a) as ArtifactId[],
         // artifactSets: artifactSets.split("\n").map((line: string) => {
         //   let sets = [];

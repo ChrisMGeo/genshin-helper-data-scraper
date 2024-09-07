@@ -4,5 +4,8 @@
     "googleapis": "^144.0.0",
     "typescript": "^5.5.4"
   },
-  "main": "build/index.js"
+  "main": "build/index.js",
+  "dependencies": {
+    "fuse.js": "^7.0.0"
+  }
 }
