@@ -158,7 +158,7 @@ async function getData() {
     ranges: characterRanges,
   });
 
-  console.log(characterRanges.length);
+  // console.log(characterRanges.length);
   const characterValueRanges = characterData.data.valueRanges;
   if (!characterValueRanges) return;
   for (let i = 0; i < characterValueRanges.length; i++) {
@@ -202,7 +202,7 @@ async function getData() {
       // console.log(buildObject);
       builds.push(buildObject);
     }
-    console.log(builds);
+    // console.log(builds);
     // sort weapons in descending order based on name length
     const modifiedBuilds: CharacterBuild[] = builds.map(({ weapons, artifactSets, ...rest }) => {
       return {
