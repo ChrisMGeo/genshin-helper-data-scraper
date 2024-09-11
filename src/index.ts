@@ -19,18 +19,20 @@ type UnmodifiedCharacterBuild = {
   abilityTips: string;
 };
 
+type ArtifactSetChoice = ArtifactId | { type: "group", id: ArtifactGroupId };
+
 type CharacterBuild = {
   weapons: WeaponId[];
   artifactSets: (
-    ArtifactId | { type: "group", id: ArtifactGroupId }
+    ArtifactSetChoice
     | {
       type: "choose",
       amount: 1 | 2; // choose 1 (4pc) or 2 (2pc) from options
-      options: (ArtifactId | { type: "group", id: ArtifactGroupId })[]
+      options: ArtifactSetChoice[]
     }
     | {
       type: "double",
-      options: [(ArtifactId | { type: "group", id: ArtifactGroupId }), (ArtifactId | { type: "group", id: ArtifactGroupId })]
+      options: [ArtifactSetChoice, ArtifactSetChoice]
     }
   )[];
   artifactMainStats: string;
