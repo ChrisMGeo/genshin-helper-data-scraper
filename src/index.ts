@@ -140,7 +140,7 @@ async function getData() {
       builds.push(buildObject);
     }
     const modifiedBuilds: CharacterBuild[] = builds.map(({ weapons: _weapons, artifactSets, ...rest }) => {
-      const weapons = _weapons.split("\n").map((line: string) => {
+      const weapons = _weapons.split("\n").filter(line => line).map((line: string) => {
         switch (weapon) {
           case "sword":
             return swordFuse.search(line)?.[0]?.item?.nameId;
