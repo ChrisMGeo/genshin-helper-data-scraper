@@ -97,7 +97,6 @@ async function getData() {
     ranges: characterRanges,
   });
 
-  // console.log(characterRanges.length);
   const characterValueRanges = characterData.data.valueRanges;
   if (!characterValueRanges) return;
   for (let i = 0; i < characterValueRanges.length; i++) {
@@ -138,11 +137,8 @@ async function getData() {
         talentPriority: buildValues[5] ?? (log(builds[builds.length - 1].talentPriority) ?? ""),
         abilityTips: buildValues[6] ?? "",
       };
-      // console.log(buildObject);
       builds.push(buildObject);
     }
-    // console.log(builds);
-    // sort weapons in descending order based on name length
     const modifiedBuilds: CharacterBuild[] = builds.map(({ weapons: _weapons, artifactSets, ...rest }) => {
       const weapons = _weapons.split("\n").map((line: string) => {
         switch (weapon) {
@@ -160,21 +156,6 @@ async function getData() {
       }).filter(a => a) as WeaponId[];
       return {
         ...rest,
-        // weapons: weapons.split("\n").map((line: string) => {
-        //   let weapons = [];
-        //   let changed = true;
-        //   while (changed) {
-        //     changed = false;
-        //     for (let weapon of nameSortedWeapons) {
-        //       const indexOf = line.indexOf(weapon.name);
-        //       if (indexOf) {
-        //         weapons.push(weapon.nameId);
-        //         line = line.slice(0, indexOf) + line.slice(indexOf + weapon.name.length);
-        //         changed = true;
-        //       }
-        //     }
-        //   }
-        // })
         weapons,
         artifactSets: artifactSets.split("\n").map((line: string) => allArtifactInfo.find(artifact => line.includes(artifact.name))?.nameId).filter((a: string | undefined) => a) as ArtifactId[],
         // artifactSets: artifactSets.split("\n").map((line: string) => {
