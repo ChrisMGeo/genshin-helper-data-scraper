@@ -129,11 +129,11 @@ async function getData() {
       const buildValues = characterValues.values[build].slice(1);
       const buildObject = {
         name: buildValues[0] ?? "",
-        weapons: buildValues[1] ?? (log(builds[builds.length - 1].weapons) ?? ""),
-        artifactSets: buildValues[2] ?? (log(builds[builds.length - 1].artifactSets) ?? ""),
-        artifactMainStats: buildValues[3] ?? (log(builds[builds.length - 1].artifactMainStats) ?? ""),
-        artifactSubStats: buildValues[4] ?? (log(builds[builds.length - 1].artifactSubStats) ?? ""),
-        talentPriority: buildValues[5] ?? (log(builds[builds.length - 1].talentPriority) ?? ""),
+        weapons: buildValues[1] ?? (builds[builds.length - 1].weapons ?? ""),
+        artifactSets: buildValues[2] ?? (builds[builds.length - 1].artifactSets ?? ""),
+        artifactMainStats: buildValues[3] ?? (builds[builds.length - 1].artifactMainStats ?? ""),
+        artifactSubStats: buildValues[4] ?? (builds[builds.length - 1].artifactSubStats ?? ""),
+        talentPriority: buildValues[5] ?? (builds[builds.length - 1].talentPriority ?? ""),
         abilityTips: buildValues[6] ?? "",
       };
       builds.push(buildObject);
