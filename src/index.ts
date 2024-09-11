@@ -19,15 +19,14 @@ type UnmodifiedCharacterBuild = {
   abilityTips: string;
 };
 
-type ArtifactSetChoice = ArtifactId | { type: "group", id: ArtifactGroupId };
+type ArtifactSetChoice = { type: "set", id: ArtifactId } | { type: "group", id: ArtifactGroupId };
 
 type CharacterBuild = {
   weapons: WeaponId[];
   artifactSets: (
-    ArtifactSetChoice
+    { type: "single", option: ArtifactSetChoice }
     | {
-      type: "choose",
-      amount: 1 | 2; // choose 1 (4pc) or 2 (2pc) from options
+      type: "choose-2",
       options: ArtifactSetChoice[]
     }
     | {
@@ -157,45 +156,43 @@ async function getData() {
       return {
         ...rest,
         weapons,
-        artifactSets: artifactSets.split("\n").map((line: string) => allArtifactInfo.find(artifact => line.includes(artifact.name))?.nameId).filter((a: string | undefined) => a) as ArtifactId[],
-        // artifactSets: artifactSets.split("\n").map((line: string) => {
-        //   let sets = [];
-        //   let changed = true;
-        //   while (changed) {
-        //     changed = false;
-        //     for (let artifact of nameSortedArtifacts) {
-        //       const indexOf = line.indexOf(artifact.name);
-        //       if (indexOf >= 0) {
-        //         sets.push(artifact.nameId);
-        //         line = line.slice(0, indexOf) + line.slice(indexOf + artifact.name.length);
-        //         changed = true;
-        //       }
-        //     }
-        //     for (let group of nameSortedArtifactGroups) {
-        //       const indexOf = line.indexOf(group.name);
-        //       if (indexOf >= 0) {
-        //         sets.push({ type: "group", id: group.nameId });
-        //         line = line.slice(0, indexOf) + line.slice(indexOf + group.name.length);
-        //         changed = true;
-        //       }
-        //     }
-        //   }
-        //   if (sets.length === 0) { return undefined; }
-        //   else if (sets.length === 1) {
-        //     return sets[0];
-        //   } else if (sets.length === 2) {
-        //     return {
-        //       type: "double",
-        //       options: [sets[0], sets[1]]
-        //     };
-        //   } else {
-        //     return {
-        //       type: "choose",
-        //       amount: 2,
-        //       options: sets
-        //     };
-        //   }
-        // }).filter(a => a) as ArtifactId[],
+        artifactSets: artifactSets.split("\n").map((line: string) => {
+          let sets = [];
+          let changed = true;
+          while (changed) {
+            changed = false;
+            for (let artifact of allArtifactInfo) {
+              const indexOf = line.indexOf(artifact.name);
+              if (indexOf >= 0) {
+                sets.push({ type: "set", id: artifact.nameId });
+                line = line.slice(0, indexOf) + line.slice(indexOf + artifact.name.length);
+                changed = true;
+              }
+            }
+            for (let group of artifactGroups) {
+              const indexOf = line.indexOf(group.name);
+              if (indexOf >= 0) {
+                sets.push({ type: "group", id: group.nameId });
+                line = line.slice(0, indexOf) + line.slice(indexOf + group.name.length);
+                changed = true;
+              }
+            }
+          }
+          if (sets.length === 0) { return undefined; }
+          else if (sets.length === 1) {
+            return { type: "single", option: sets[0] };
+          } else if (sets.length === 2) {
+            return {
+              type: "double",
+              options: [sets[0], sets[1]]
+            };
+          } else {
+            return {
+              type: "choose-2",
+              options: sets
+            };
+          }
+        }).filter(a => a) as CharacterBuild["artifactSets"],
       }
     });
     // console.log(
