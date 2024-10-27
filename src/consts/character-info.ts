@@ -5765,6 +5765,76 @@ const characterInfo = [
         "descHash": 1189657291
       }
     ]
+  },
+  {
+    "id": 10000103,
+    "weaponType": "sword",
+    "titleHash": 2460167938,
+    "detailHash": 4022124610,
+    "constellationHash": 2486497690,
+    "rarity": 5,
+    "vision": "geo",
+    "nameId": "xilonen",
+    "nameHash": 2515292882,
+    "descHash": 2708312545,
+    "constellations": [
+      {
+        "nameHash": 440486569,
+        "descHash": 4073543231
+      },
+      {
+        "nameHash": 1513759721,
+        "descHash": 2110223647
+      },
+      {
+        "nameHash": 2144038849,
+        "descHash": 3601606127
+      },
+      {
+        "nameHash": 3939402377,
+        "descHash": 1779334775
+      },
+      {
+        "nameHash": 344656665,
+        "descHash": 3810218279
+      },
+      {
+        "nameHash": 132224481,
+        "descHash": 4289888135
+      }
+    ],
+    "energySkill": {
+      "nameHash": 3155535173,
+      "descHash": 2246355928
+    },
+    "skills": [
+      {
+        "nameHash": 1335063693,
+        "descHash": 2284081200
+      },
+      {
+        "nameHash": 743563437,
+        "descHash": 3703823376
+      }
+    ],
+    "passives": [
+      {
+        "nameHash": 2823819941,
+        "descHash": 367126683
+      },
+      {
+        "nameHash": 3492827813,
+        "descHash": 2419557667
+      },
+      {
+        "nameHash": 3681753285,
+        "descHash": 4164895091
+      },
+      {
+        "nameHash": 4165601605,
+        "descHash": 3463625755
+      }
+    ]
   }
 ] as const;
 export type CharacterInfo = typeof characterInfo[number];
